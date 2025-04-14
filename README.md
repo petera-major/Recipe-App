@@ -41,3 +41,21 @@ AI Chat- Users ingredients are typed here and AI generates five personalized rec
 Detailed Recipe- Users view the full recipe which includes calories, ingredients and step by step instructions. Users also have an option to bookmark the recipe.
 
 ** **Check the full wireframes in the [GitHub Wiki](https://github.com/petera-major/Recipe-App/wiki)**  
+
+
+## Week 4 Project Submission: Updates and Changelog
+
+### Changes Made This Week
+- Added bottom tab navigation (Home, Profile, Bookmarks, AI Chat)
+- Separated AI Chat into its own tab (was previously on Home screen)
+- Updated navigation flow after dietary goal selection
+- Home screen now loads static recipe content for testing
+- Set up layout for Profile and Bookmark tabs
+- Preparing Firebase and API connections
+
+### Version Changelog
+
+Version - Summary of Changes 
+**Week 3** - Basic screens in place: Goal Selection, Home, AI Chat on Home screen, no navigation tabs. No APIs or Firebase connected. |
+**Week 4** - Navigation flow completed. Tab layout added. AI Chat moved to separate tab. Home screen recipes display static data. Firebase and API connections pending. 
+**Planned Week 5** - Connect Spoonacular and OpenAI APIs. Add real-time bookmarking via Firebase. Finalize user authentication. Polish UI & error handling.
