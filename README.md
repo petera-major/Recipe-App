@@ -55,7 +55,8 @@ Detailed Recipe- Users view the full recipe which includes calories, ingredients
 
 ### Version Changelog
 
-Version - Summary of Changes 
+Version - Summary of Changes 📋
+
 **Week 3** - Basic screens in place: Goal Selection, Home, AI Chat on Home screen, no navigation tabs. No APIs or Firebase connected. 
 
 **Week 4** - Navigation flow completed. Tab layout added. AI Chat moved to separate tab. Home screen recipes display static data. Firebase and API connections pending. 
