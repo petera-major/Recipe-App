@@ -1,50 +1,64 @@
-# Welcome to your Expo app 👋
+SmartPantryMuse -Recipe App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Description: This recipe app enables users to discover meal ideas based on their preferences and goals. When entering the app the user chooses their goals (for example weight loss, vegan, improving their relationship with food). Based on their goals the app suggests recipes via the database. Also, users are able to interact with an AI recipe assistant to enter ingredients that they currently have for five personalized meal recipes based on their preferences.
 
-## Get started
+Problem Addressing: Meal planning can be stressful for persons who work but have dietary goals they want to achieve. This app will solve this issue by:
+* Helping users build better relationships with food
+* Providing structured recipes for their dietary goals.
+* Offering interactive AI meal suggestions based on the users available ingredients 
 
-1. Install dependencies
+Platform: This app will be built using React Native. Therefore it will be compatible with Web, IOS and Android.
 
-   ```bash
-   npm install
-   ```
+Frontend & Backend Support:
 
-2. Start the app
+Frontend- * React Native framework for UI and interactivity
+          * React Navigation
+          * Tailwing CSS
+          
+Backend-  * Spoonacular API for recipes
+          * OPENAI API for generation personalized recipes
+          * Firebase Firestore to store user data, preferences and recipes the user saves
+          * Firebase Authentication to manage user logins (Google etc.)
 
-   ```bash
-    npx expo start
-   ```
+Functionality:
+* The user preference/goal - When a user enters the app they pick their dietary goal
+* Recipe Suggestion - The user choice enables the app to suggest personalized recipes
+* AI Recipe Assistant - This chat enables users to enter their ingredies and the AI suggests five recipes based on entries and their dietary goals
+* Recipes are saved - Users bookmarked recipes are saved
+* In depth Recipe instructions - Each recipe includes descriptive preparation steps
 
-In the output, you'll find options to open the app in a
+Design:
+Wireframes
+-The diagrams below are wireframes for this app. These diagrams show the apps user flow and interface design. 
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Welcome Screen- The User starts the app by selecting their dietary goal to help personalize the users recipe recommendations
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Home Screen- The Home Screen shows the recommended recipes based on the user selection and at the top allows users to enter ingredients for AI to recommend personalized meals
 
-## Get a fresh project
+AI Chat- Users ingredients are typed here and AI generates five personalized recipes based on ingredient and dietary selection
 
-When you're ready, run:
+Detailed Recipe- Users view the full recipe which includes calories, ingredients and step by step instructions. Users also have an option to bookmark the recipe.
 
-```bash
-npm run reset-project
-```
+** **Check the full wireframes in the [GitHub Wiki](https://github.com/petera-major/Recipe-App/wiki)**  
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
+## Week 4 Project: Updates and Changelog
 
-To learn more about developing your project with Expo, look at the following resources:
+### Changes Made This Week
+- Added bottom tab navigation (Home, Profile, Bookmarks, AI Chat)
+- Separated AI Chat into its own tab (was previously on Home screen)
+- Updated navigation flow after dietary goal selection
+- Home screen now loads static recipe content for testing
+- Set up layout for Profile and Bookmark tabs
+- Preparing Firebase and API connections
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Version Changelog
 
-## Join the community
+Version - Summary of Changes 📋
 
-Join our community of developers creating universal apps.
+**Week 3** - Basic screens in place: Goal Selection, Home, AI Chat on Home screen, no navigation tabs. No APIs or Firebase connected. 
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+**Week 4** - Navigation flow completed. Tab layout added. AI Chat moved to separate tab. Home screen recipes display static data. Firebase and API connections pending. 
+
+**Planned Week 5** - Connect Spoonacular and OpenAI APIs. Add real-time bookmarking via Firebase. Finalize user authentication. Polish UI & error handling.
+
