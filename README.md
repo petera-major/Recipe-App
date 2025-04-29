@@ -8,7 +8,7 @@ Problem Addressing: Meal planning can be stressful for persons who work but have
 * Providing structured recipes for their dietary goals.
 * Offering interactive AI meal suggestions based on the users available ingredients 
 
-Platform: This app will be built using React Native. Therefore it will be compatible with IOS and Android.
+Platform: This app will be built using React Native. Therefore it will be compatible with Web, IOS and Android.
 
 Frontend & Backend Support:
 
