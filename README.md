@@ -60,5 +60,5 @@ Version - Summary of Changes 📋
 
 **Week 4** - Navigation flow completed. Tab layout added. AI Chat moved to separate tab. Home screen recipes display static data. Firebase and API connections pending. 
 
-**Planned Week 5** - Connect Spoonacular and OpenAI APIs. Add real-time bookmarking via Firebase. Finalize user authentication. Polish UI & error handling.
+**Week 5** - Connected Spoonacular and OpenAI APIs. Added real-time bookmarking via Firebase. Finalized user authentication via Firebase. Polished UI & error handling.
 
