@@ -62,3 +62,4 @@ Version - Summary of Changes 📋
 
 **Week 5** - Connected Spoonacular and OpenAI APIs. Added real-time bookmarking via Firebase. Finalized user authentication via Firebase. Polished UI & error handling.
 
+** **Full Project Outline in the [Github Wiki](https://github.com/petera-major/Recipe-App/wiki/Project-Outline)**
