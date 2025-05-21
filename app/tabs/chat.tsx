@@ -2,6 +2,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Activi
 import { useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { KeyboardAvoidingView, Platform } from 'react-native';
 
 export default function ChatScreen() {
   const { goal, allergies } = useLocalSearchParams();
@@ -43,14 +44,11 @@ export default function ChatScreen() {
 
           Keep it clear and beginner-friendly!`;
 
-        const res = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.EXPO_PUBLIC_OPENAI_API_KEY}`,
-          },
-          body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
+          const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+          const res = await fetch('https://recipeapp-backend-production.up.railway.app/api/chat', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: 'gpt-3.5-turbo',
             messages: [{ role: 'user', content: detailedPrompt }],
           }),
         });
@@ -64,14 +62,10 @@ export default function ChatScreen() {
       } else {
         const prompt = `Suggest 5 meal ideas using these ingredients: ${input}. List them 1–5, one per line. They should align with a ${goal || 'balanced'} diet and avoid ${allergies || 'none'}.`;
 
-        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        const res = await fetch('https://recipeapp-backend-production.up.railway.app/api/chat', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.EXPO_PUBLIC_OPENAI_API_KEY}`,
-          },
-          body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: 'gpt-3.5-turbo',
             messages: [{ role: 'user', content: prompt }],
           }),
         });
@@ -123,10 +117,14 @@ export default function ChatScreen() {
   };
 
   return (
+    <KeyboardAvoidingView
+    style= {{ flex:1 }}
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
     <View style={styles.container}>
       <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
       <Text style={styles.newChatText}>Start New Chat 🍳</Text>
     </TouchableOpacity>
+
 
       <ScrollView style={styles.chat} contentContainerStyle={{ padding: 16 }}>
         {messages.map((msg, index) => (
@@ -160,6 +158,7 @@ export default function ChatScreen() {
         </TouchableOpacity>
       </View>
     </View>
+    </KeyboardAvoidingView>
   );
 }
 

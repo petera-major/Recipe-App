@@ -51,11 +51,16 @@ export default function RecipeDetail() {
       ))}
 
       <Text style={styles.section}>Instructions</Text>
-      <Text style={styles.text}>
-        {details.instructions
-          ? details.instructions.replace(/<\/?[^>]+(>|$)/g, '') // strip HTML
-          : 'No instructions provided.'}
-      </Text>
+      {details.analyzedInstructions?.[0]?.steps?.length > 0 ? (
+        details.analyzedInstructions[0].steps.map((step: any, index: number) => (
+          <Text key={index} style={styles.text}>
+            {index + 1}. {step.step}
+          </Text>
+        ))
+      ) : (
+        <Text style={styles.text}>No instructions provided.</Text>
+      )}
+
     </ScrollView>
   );
 }

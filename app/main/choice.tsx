@@ -27,10 +27,15 @@ export default function ChoiceScreen() {
 
         await saveGoalToFirestore(selectedGoal?.label || '');
 
-        const url = `https://api.spoonacular.com/recipes/complexSearch?${selectedApiValue ? `diet=${selectedApiValue}&` : ''}intolerances=${allergies}&number=50&addRecipeInformation=true&apiKey=${process.env.EXPO_PUBLIC_SPOONACULAR_API_KEY}`;
-
-      const response = await fetch(url);
-      const data = await response.json();
+        const response = await fetch('https://recipeapp-backend-production.up.railway.app/api/recipes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            diet: selectedApiValue,
+            allergies: allergies,
+          }),
+        });
+        const data = await response.json();        
   
         router.replace({
           pathname: '/tabs/result',
