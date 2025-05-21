@@ -20,7 +20,12 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "SmartPantryMuse",
+      "shortName": "PantryMuse",
+      "themeColor": "#fdf5ec",
+      "backgroundColor": "#fff",
+      "display": "standalone"
     },
     "plugins": [
       "expo-router",
