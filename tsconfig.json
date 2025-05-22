@@ -1,7 +1,18 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "jsx": "react-native",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "types": [
+      "expo"
+    ],
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
@@ -11,7 +22,6 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts"
   ]
