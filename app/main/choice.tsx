@@ -10,21 +10,10 @@ export default function ChoiceScreen() {
   const [allergies, setAllergies] = useState('');
     const router = useRouter();
 
-    const saveGoalToFirestore = async (goal: string) => {
-
-      const user = auth.currentUser;
-      if (!user) {
-        console.log('User not logged in yet, skipping save');
-    }
-        const userRef = doc(db, 'users', user!.uid);
-        await setDoc(userRef, { goal }, { merge: true });
-    };  
 
     const handleContinue = async () => {
       try {
         const selectedApiValue = selectedGoal?.apiValue;
-
-        await saveGoalToFirestore(selectedGoal?.label || '');
 
         const response = await fetch('https://recipeapp-backend-production.up.railway.app/api/recipes', {
           method: 'POST',
