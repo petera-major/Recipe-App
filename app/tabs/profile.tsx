@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { auth } from '../../firebase';
+import { auth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db } from '@/firebase';
 
 export default function ProfileScreen() {
   const [bookmarkCount, setBookmarkCount] = useState(0);

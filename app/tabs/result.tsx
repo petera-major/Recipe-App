@@ -3,8 +3,8 @@ import { useLocalSearchParams, router } from 'expo-router';
 import {View, Text, FlatList, Image, TouchableOpacity, StyleSheet,ActivityIndicator, TextInput, Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
-import { auth } from '../../firebase';
-import { db } from '../../firebase';
+import { auth } from '@/firebase';
+import { db } from '@/firebase';
 import { doc, setDoc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 
 export default function ResultScreen() {

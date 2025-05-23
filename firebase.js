@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore'
 
@@ -11,7 +11,8 @@ const firebaseConfig = {
   appId: '1:366032639011:web:863c04e5462148c53a8d96',
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+
+
+export const auth = getAuth(app); 
 export const db = getFirestore(app);
-export { onAuthStateChanged };

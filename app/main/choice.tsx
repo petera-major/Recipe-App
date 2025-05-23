@@ -1,15 +1,12 @@
 import { useRouter } from 'expo-router';
 import { Text, View, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import React, { useState } from 'react';
-import { db, auth } from '@/firebase';
-import { doc, setDoc } from 'firebase/firestore';
 
 export default function ChoiceScreen() {
 
   const [selectedGoal, setSelectedGoal] = useState<{ label: string; apiValue: string } | null>(null);
   const [allergies, setAllergies] = useState('');
     const router = useRouter();
-
 
     const handleContinue = async () => {
       try {
@@ -25,7 +22,6 @@ export default function ChoiceScreen() {
         });
         const data = await response.json();        
   
-        
         router.replace({
           pathname: '/tabs/result',
           params: { recipes: JSON.stringify(data.results),

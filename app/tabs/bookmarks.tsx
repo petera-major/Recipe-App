@@ -1,9 +1,9 @@
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useEffect, useState } from 'react';
-import { auth } from '../../firebase';
+import { auth } from '@/firebase';
 import { useRouter } from 'expo-router';
 import { doc, getDoc, updateDoc, arrayRemove } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db } from '@/firebase';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function BookmarksScreen() {
