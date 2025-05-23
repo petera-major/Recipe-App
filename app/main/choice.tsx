@@ -11,13 +11,12 @@ export default function ChoiceScreen() {
     const router = useRouter();
 
     const saveGoalToFirestore = async (goal: string) => {
-    
+
       const user = auth.currentUser;
       if (!user) {
         console.log('User not logged in yet, skipping save');
-        return;
     }
-        const userRef = doc(db, 'users', user.uid);
+        const userRef = doc(db, 'users', user!.uid);
         await setDoc(userRef, { goal }, { merge: true });
     };  
 
@@ -37,6 +36,7 @@ export default function ChoiceScreen() {
         });
         const data = await response.json();        
   
+        
         router.replace({
           pathname: '/tabs/result',
           params: { recipes: JSON.stringify(data.results),
