@@ -1,6 +1,11 @@
 import { useLocalSearchParams } from 'expo-router';
-import { View, Text, Image, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Image, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity, Alert, Animated } from 'react-native';
 import { useEffect, useState } from 'react';
+import {CheckBox} from 'react-native-elements';
+import * as ImagePicker from 'expo-image-picker';
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
+
 
 export const screenOptions = {
   tabBarStyle: { display: 'none' },
@@ -12,6 +17,12 @@ export default function RecipeDetail() {
   const { recipe } = useLocalSearchParams();
   const base = typeof recipe === 'string' ? JSON.parse(recipe) : {};
   const [details, setDetails] = useState<any>(null);
+
+  const [checkedSteps, setCheckedSteps] = useState<number[]>([]);
+  const [showBadge, setShowBadge] = useState(false);
+  const badgeOpacity = useState(new Animated.Value(0))[0];
+  const [imageUri, setImageUri] = useState<string | null>(null);
+
 
   useEffect(() => {
     if (!base.id) return;
@@ -53,17 +64,101 @@ export default function RecipeDetail() {
       <Text style={styles.section}>Instructions</Text>
       {details.analyzedInstructions?.[0]?.steps?.length > 0 ? (
         details.analyzedInstructions[0].steps.map((step: any, index: number) => (
-          <Text key={index} style={styles.text}>
-            {index + 1}. {step.step}
-          </Text>
+          <CheckBox
+            key={index}
+            title={`${index + 1}. ${step.step}`}
+            checked={checkedSteps.includes(index)}
+            onPress={() => {
+              setCheckedSteps(prev => {
+                const updated = prev.includes(index)
+                  ? prev.filter(i => i !== index)
+                  : [...prev, index];
+
+                if (updated.length === details.analyzedInstructions[0].steps.length) {
+                  setShowBadge(true);
+                  Animated.timing(badgeOpacity, {
+                    toValue: 1,
+                    duration: 500,
+                    useNativeDriver: true,
+                  }).start();
+                } else {
+                  setShowBadge(false);
+                  badgeOpacity.setValue(0);
+                }
+
+                return updated;
+              });
+            }}
+            containerStyle={{ backgroundColor: 'transparent', borderWidth: 0 }}
+            textStyle={{ fontSize: 14, color: '#444', lineHeight: 20 }}
+            checkedColor="#F1C27B"
+          />
         ))
       ) : (
         <Text style={styles.text}>No instructions provided.</Text>
       )}
 
+      {showBadge && (
+        <Animated.View style={[styles.badge, { opacity: badgeOpacity }]}>
+          <Text style={styles.badgeText}>🎉 Finished Cooking!</Text>
+
+          <TouchableOpacity
+            style={styles.photoButton}
+            onPress={async () => {
+              const permission = await ImagePicker.requestCameraPermissionsAsync();
+              if (!permission.granted) {
+                Alert.alert("Permission required", "Camera access is needed to take a photo.");
+                return;
+              }
+
+              const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+              });
+
+              if (!result.canceled) {
+                setImageUri(result.assets[0].uri);
+              }
+            }}
+          >
+            <Text style={styles.photoButtonText}>📸 Snap a Pic of Your Dish!</Text>
+          </TouchableOpacity>
+
+          {imageUri && (
+            <View style={styles.photoFrame}>
+              <Image source={{ uri: imageUri }} style={styles.previewImage} />
+              <TouchableOpacity
+                onPress={async () => {
+                  if (!(await Sharing.isAvailableAsync())) {
+                    Alert.alert("Sharing not available on this device");
+                    return;
+                  }
+
+                  const filename = imageUri.split('/').pop();
+                  const fileUri = (FileSystem.documentDirectory ?? '')  + filename;
+
+                  await FileSystem.copyAsync({
+                    from: imageUri,
+                    to: fileUri,
+                  });
+
+                  await Sharing.shareAsync(fileUri);
+                }}
+                style={styles.shareButton}
+              >
+                <Text style={styles.shareButtonText}>🔗 Share Your Dish!</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+
+        </Animated.View>
+      )}
     </ScrollView>
   );
-}
+}  
 
 const styles = StyleSheet.create({
   loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
@@ -97,6 +192,59 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: '#444',
     marginBottom: 6,
+  },
+  badge: {
+    marginTop: 20,
+    backgroundColor: '#DFF5E1',
+    padding: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  badgeText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#388E3C',
+  },
+  photoButton: {
+    backgroundColor: '#FFD9C0',
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 12,
+  },  
+  photoButtonText: {
+    color: '#4E342E',
+    fontWeight: '600',
+    fontSize: 15,
+  },
+  photoFrame: {
+    marginTop: 16,
+    borderWidth: 4,
+    borderColor: '#F1C27B',
+    borderRadius: 16,
+    padding: 6,
+    alignItems: 'center',
+    backgroundColor: '#fffdf6',
+  },
+  previewImage: {
+    width: 250,
+    height: 180,
+    borderRadius: 10,
+  },
+  shareButton: {
+    marginTop: 12,
+    backgroundColor: '#CDE8D7',
+    padding: 10,
+    borderRadius: 10,
+  },
+  shareButtonText: {
+    fontSize: 15,
+    color: '#2E7D32',
+    fontWeight: '600',
   },
 });
 

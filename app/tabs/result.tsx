@@ -12,6 +12,8 @@ export default function ResultScreen() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fallbackFetched, setFallbackFetched] = useState(false);
+
 
   let recipeList: any[] = [];
   if (typeof recipes === 'string') {
@@ -21,6 +23,27 @@ export default function ResultScreen() {
       console.error('Failed to parse recipes:', error);
     }
   }
+
+  useEffect(() => {
+    if (!recipes && goal && !fallbackFetched) {
+      fetchRecipesByGoal();
+    }
+  }, [recipes, goal]);
+
+  const fetchRecipesByGoal = async () => {
+    setLoading(true);
+    try {
+      const url = `https://api.spoonacular.com/recipes/complexSearch?diet=${goal}&number=20&addRecipeInformation=true&apiKey=dc49b262797d47e190b6feada3a13494`;
+      const res = await fetch(url);
+      const data = await res.json();
+      setSearchResults(data.results);
+      setFallbackFetched(true);
+    } catch (err) {
+      console.error('Fallback fetch failed:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
@@ -148,7 +171,6 @@ const handleBookmarkPress = async () => {
   }, 150);
 
   await toggleBookmark();
-  setIsBookmarked(prev => !prev);
 };
 
   return (

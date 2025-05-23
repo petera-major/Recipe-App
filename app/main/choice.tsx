@@ -1,6 +1,8 @@
 import { useRouter } from 'expo-router';
 import { Text, View, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import React, { useState } from 'react';
+import {auth, db} from '@/firebase';
+import {doc, setDoc} from 'firebase/firestore';
 
 export default function ChoiceScreen() {
 
@@ -11,6 +13,15 @@ export default function ChoiceScreen() {
     const handleContinue = async () => {
       try {
         const selectedApiValue = selectedGoal?.apiValue;
+
+        const user = auth.currentUser;
+        if (user) {
+        const userRef = doc(db, 'users', user.uid);
+        await setDoc(userRef, {
+          goal: selectedApiValue,
+          allergies: allergies,
+        }, { merge: true });
+        }
 
         const response = await fetch('https://recipeapp-backend-production.up.railway.app/api/recipes', {
           method: 'POST',
@@ -40,7 +51,7 @@ export default function ChoiceScreen() {
       {label: 'Vegan', apiValue: 'vegan'},
       {label: 'Vegetarian', apiValue: 'vegetarian'},
       {label: 'Keto', apiValue: 'ketogenic' },
-      {label: 'Better Relationship with Food', apiValue: ''},
+      {label: 'Better Relationship with Food', apiValue: 'maxCalories=900'},
     ];
   
     return (
