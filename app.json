@@ -12,7 +12,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.peteram.smartpantrymuse",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "We need access to your camera to let you snap photos of your finished dishes.",
+        "NSPhotoLibraryUsageDescription": "We need access to your photo library to let you share your food photos."
       }
     },
     "android": {
@@ -33,6 +35,9 @@
     },
     "plugins": [
       "expo-router",
+      "expo-image-picker",
+      "expo-sharing",
+      "expo-file-system",
       [
         "expo-splash-screen",
         {
