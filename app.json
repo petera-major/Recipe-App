@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "recipe",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.peteram.smartpantrymuse",
@@ -36,7 +36,6 @@
     "plugins": [
       "expo-router",
       "expo-image-picker",
-      "expo-sharing",
       "expo-file-system",
       [
         "expo-splash-screen",
