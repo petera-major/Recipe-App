@@ -28,7 +28,7 @@
       "name": "SmartPantryMuse",
       "shortName": "PantryMuse",
       "themeColor": "#fdf5ec",
-      "backgroundColor": "#fff",
+      "backgroundColor": "#ffffff",
       "display": "standalone"
     },
     "plugins": [
