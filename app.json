@@ -7,14 +7,12 @@
     "icon": "./assets/images/icon.png",
     "scheme": "recipe",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.peteram.smartpantrymuse",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false,
-        "NSCameraUsageDescription": "We need access to your camera to let you snap photos of your finished dishes.",
-        "NSPhotoLibraryUsageDescription": "We need access to your photo library to let you share your food photos."
+        "ITSAppUsesNonExemptEncryption": true
       }
     },
     "android": {
@@ -35,8 +33,6 @@
     },
     "plugins": [
       "expo-router",
-      "expo-image-picker",
-      "expo-file-system",
       [
         "expo-splash-screen",
         {
