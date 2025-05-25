@@ -12,7 +12,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.peteram.smartpantrymuse",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": true
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
