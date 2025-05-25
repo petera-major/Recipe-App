@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Image, TextInput } from 'react-native';
 import { auth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { doc, onSnapshot } from 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { db } from '@/firebase';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
@@ -11,11 +12,21 @@ export default function ProfileScreen() {
   const [bookmarkCount, setBookmarkCount] = useState(0);
   const [goal, setGoal] = useState('');
   const [randomRecipe, setRandomRecipe] = useState<any | null>(null);
+  const [groceryList, setGroceryList] = useState<string[]>(["Spinach", "Tomatoes", "Olive Oil"]);
+  const [newItem, setNewItem] = useState('');
   const router = useRouter();
 
   useEffect(() => {
+    const redirectAfterLogin = async () => {
     const user = auth.currentUser;
     if (!user) return;
+
+    const hasRedirected = await AsyncStorage.getItem('redirectedAfterLogin');
+    if (!hasRedirected) {
+      await AsyncStorage.setItem('redirectedAfterLogin', 'true');
+      router.replace('/main/choice');
+      return;
+    }
 
     const userRef = doc(db, 'users', user.uid);
     const unsubscribe = onSnapshot(userRef, (snapshot) => {
@@ -26,7 +37,20 @@ export default function ProfileScreen() {
     });
 
     return () => unsubscribe();
+    };
+
+    redirectAfterLogin();
   }, []);
+
+  const goalLabels: Record<string, string> = {
+    'high-protein': 'Weight Gain',
+    'low FODMAP': 'Weight Loss',
+    'vegan': 'Vegan',
+    'vegetarian': 'Vegetarian',
+    'ketogenic': 'Keto',
+    'maxCalories=900': 'Better Relationship with Food',
+  };
+  
 
   const handleLogout = async () => {
     try {
@@ -35,6 +59,10 @@ export default function ProfileScreen() {
     } catch (err) {
       Alert.alert('Logout failed', 'Please try again.');
     }
+  };
+
+  const handleChangeGoal = () => {
+    router.push('/main/choice');
   };
 
   const handleRoulette = async () => {
@@ -47,6 +75,16 @@ export default function ProfileScreen() {
     } catch (error) {
       console.error('Error fetching random recipe:', error);
     }
+  };
+  const handleAddItem = () => {
+    if (newItem.trim() !== '') {
+      setGroceryList(prev => [...prev, newItem.trim()]);
+      setNewItem('');
+    }
+  };
+
+  const handleRemoveItem = (indexToRemove: number) => {
+    setGroceryList(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
   const user = auth.currentUser;
@@ -68,8 +106,14 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Welcome, {user?.email?.split('@')[0] || 'Friend'} 👋</Text>
-      <Text style={styles.goal}>Your goal: <Text style={styles.goalValue}>{goal || 'Not set yet'}</Text></Text>
+      <Text style={styles.heading}>Welcome, {user?.email?.split('@')[0] || 'Friend'} </Text>
+      <Text style={styles.goal}> Your goal: <Text style={styles.goalValue}>{goalLabels[goal] || 'Not set yet'}</Text> </Text>
+
+
+      <TouchableOpacity style={styles.changeGoalButton} onPress={handleChangeGoal}>
+        <Text style={styles.changeGoalText}>🔄 Change Your Goal</Text>
+      </TouchableOpacity>
+
       <Text style={styles.quote}>“You don’t have to eat less just eat right.” 🥗🍓🥑</Text>
 
       <TouchableOpacity
@@ -78,6 +122,27 @@ export default function ProfileScreen() {
       >
         <Text style={styles.bookmarkText}>View {bookmarkCount} Saved Recipe{bookmarkCount === 1 ? '' : 's'} ❤️</Text>
       </TouchableOpacity>
+
+      <View style={styles.groceryListBox}>
+        <Text style={styles.groceryTitle}>🛒 Grocery List</Text>
+        <View style={styles.inputRow}>
+          <TextInput
+            style={styles.input}
+            placeholder="Add item..."
+            value={newItem}
+            onChangeText={setNewItem}
+            onSubmitEditing={handleAddItem}
+          />
+          <TouchableOpacity onPress={handleAddItem} style={styles.addButton}>
+            <Text style={styles.addButtonText}>Add</Text>
+          </TouchableOpacity>
+        </View>
+        {groceryList.map((item, index) => (
+          <TouchableOpacity key={index} onPress={() => handleRemoveItem(index)}>
+            <Text style={styles.groceryItem}>• {item}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
         <Text style={styles.logoutText}>Log Out</Text>
@@ -135,6 +200,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#F1C27B',
   },
+  changeGoalButton: {
+    marginBottom: 14,
+  },
+  changeGoalText: {
+    fontSize: 14,
+    color: '#2e7d32',
+    fontWeight: '600',
+  },
   quote: {
     fontStyle: 'italic',
     fontSize: 16,
@@ -154,6 +227,48 @@ const styles = StyleSheet.create({
     color: '#333',
     fontSize: 16,
     fontWeight: '500',
+  },
+  groceryListBox: {
+    width: '100%',
+    backgroundColor: '#FFF3EC',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  groceryTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+    color: '#4E342E',
+  },
+  inputRow: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  input: {
+    flex: 1,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginRight: 8,
+  },
+  addButton: {
+    backgroundColor: '#F1C27B',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    justifyContent: 'center',
+  },
+  addButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  groceryItem: {
+    fontSize: 14,
+    color: '#555',
+    paddingVertical: 2,
   },
   logoutBtn: {
     alignItems: 'center',

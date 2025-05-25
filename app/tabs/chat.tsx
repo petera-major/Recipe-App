@@ -128,8 +128,7 @@ export default function ChatScreen() {
 
       <ScrollView style={styles.chat} contentContainerStyle={{ padding: 16 }}>
         {messages.map((msg, index) => (
-          <View
-            key={index}
+          <View key={index}
             style={[styles.bubble, msg.role === 'user' ? styles.userBubble : styles.aiBubble]}
           >
             <Text style={styles.bubbleText}>{msg.text}</Text>

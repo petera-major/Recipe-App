@@ -33,9 +33,25 @@ export default function ResultScreen() {
   const fetchRecipesByGoal = async () => {
     setLoading(true);
     try {
+      let diet = goal;
+    let allergies = '';
+
+    // fallback to Firestore if no goal from params
+    if (!goal) {
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(db, 'users', user.uid);
+        const snapshot = await getDoc(userRef);
+        const userData = snapshot.data();
+        diet = userData?.goal || '';
+        allergies = userData?.allergies || '';
+      }
+    }
       const url = `https://api.spoonacular.com/recipes/complexSearch?diet=${goal}&number=20&addRecipeInformation=true&apiKey=dc49b262797d47e190b6feada3a13494`;
+      
       const res = await fetch(url);
       const data = await res.json();
+      
       setSearchResults(data.results);
       setFallbackFetched(true);
     } catch (err) {

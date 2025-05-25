@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { View, Text, Image, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity, Alert, Animated } from 'react-native';
 import { useEffect, useState } from 'react';
 import {CheckBox} from 'react-native-elements';
@@ -7,11 +7,13 @@ import {CheckBox} from 'react-native-elements';
 export const screenOptions = {
   tabBarStyle: { display: 'none' },
   headerShown: true,
-  title: 'Recipe Details',
+  tabBarButton: () => null,
 };
+
 
 export default function RecipeDetail() {
   const { recipe } = useLocalSearchParams();
+  const router = useRouter();
   const base = typeof recipe === 'string' ? JSON.parse(recipe) : {};
   const [details, setDetails] = useState<any>(null);
 
@@ -48,6 +50,10 @@ export default function RecipeDetail() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 10 }}>
+        <Text style={{ color: '#F1C27B', fontSize: 16 }}>← Back</Text>
+      </TouchableOpacity>
+      
       <Image source={{ uri: details.image }} style={styles.image} />
       <Text style={styles.title}>{details.title}</Text>
       <Text style={styles.meta}>⏱ {details.readyInMinutes} min • 🍽 {details.servings} servings</Text>
@@ -93,7 +99,6 @@ export default function RecipeDetail() {
       ) : (
         <Text style={styles.text}>No instructions provided.</Text>
       )}
-      
       {showBadge && (
         <Animated.View style={[styles.badge, { opacity: badgeOpacity }]}>
           <Text style={styles.badgeText}>🎉 Finished Cooking!</Text>
