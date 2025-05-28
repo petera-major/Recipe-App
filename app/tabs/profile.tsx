@@ -13,6 +13,7 @@ export default function ProfileScreen() {
   const [goal, setGoal] = useState('');
   const [randomRecipe, setRandomRecipe] = useState<any | null>(null);
   const [groceryList, setGroceryList] = useState<string[]>(["Spinach", "Tomatoes", "Olive Oil"]);
+  const [moodRecipes, setMoodRecipes] = useState<any[]>([]);
   const [newItem, setNewItem] = useState('');
   const router = useRouter();
 
@@ -50,7 +51,34 @@ export default function ProfileScreen() {
     'ketogenic': 'Keto',
     'maxCalories=900': 'Better Relationship with Food',
   };
+
+  const moods = [
+    { label: 'Lazy 😴', tag: 'easy' },
+    { label: 'Date Night 🍷', tag: 'romantic' },
+    { label: 'Comfort Food 🍲', tag: 'comfort food' },
+    { label: 'Gym Prep 🏋️', tag: 'high-protein' },
+    { label: 'Sweet Tooth 🍫', tag: 'dessert' },
+  ];  
   
+  const handleMoodSelect = async (tag: string) => {
+    try {
+      const url =`https://api.spoonacular.com/recipes/random?number=3&apiKey=dc49b262797d47e190b6feada3a13494`;
+  
+      const res = await fetch(url);
+      const data = await res.json();
+      const recipes = data.recipes || [];
+  
+      if (recipes.length > 0) {
+        setMoodRecipes(recipes); 
+      } else {
+        Alert.alert('Oops!', 'No recipes found for that mood.');
+      }
+    } catch (err) {
+      console.error('Mood recipe error:', err);
+      Alert.alert('Oops!', 'Something went wrong.');
+    }
+  };
+    
 
   const handleLogout = async () => {
     try {
@@ -143,6 +171,126 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         ))}
       </View>
+
+      <View style={{ width: '100%', marginBottom: 20 }}>
+  <Text style={{
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 12,
+    color: '#4E342E',
+    textAlign: 'center',
+  }}>
+    How are you feeling today? 🧠
+  </Text>
+
+  <ScrollView
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    contentContainerStyle={{ paddingHorizontal: 8 }}
+  >
+    {moods.map((mood) => (
+      <TouchableOpacity
+        key={mood.tag}
+        style={{
+          backgroundColor: '#FFE8D6',
+          paddingVertical: 12,
+          paddingHorizontal: 18,
+          borderRadius: 24,
+          marginRight: 12,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 2,
+          elevation: 2,
+        }}
+        onPress={() => handleMoodSelect(mood.tag)}
+      >
+        <Text style={{
+          fontSize: 15,
+          fontWeight: '600',
+          color: '#5E4637',
+        }}>
+          {mood.label}
+        </Text>
+      </TouchableOpacity>
+    ))}
+  </ScrollView>
+
+  {moodRecipes.length > 0 && (
+    <View style={{ width: '100%', marginTop: 24 }}>
+      <Text style={{
+        fontSize: 18,
+        fontWeight: '600',
+        marginBottom: 12,
+        color: '#4E342E',
+        textAlign: 'center'
+      }}>
+        💡 Recipes for your mood:
+      </Text>
+
+      {moodRecipes.map((recipe, index) => (
+        <View key={index} style={{
+          backgroundColor: '#FFF3EC',
+          padding: 16,
+          borderRadius: 12,
+          marginBottom: 16,
+          alignItems: 'center',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 2,
+        }}>
+          <Image
+            source={{ uri: recipe.image }}
+            style={{ width: 250, height: 150, borderRadius: 10, marginBottom: 10 }}
+            resizeMode="cover"
+          />
+          <Text style={{
+            fontWeight: '600',
+            fontSize: 16,
+            textAlign: 'center',
+            marginBottom: 10,
+            color: '#4E342E',
+          }}>
+            {recipe.title}
+          </Text>
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#F1C27B',
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              borderRadius: 8,
+            }}
+            onPress={() =>
+              router.push({
+                pathname: '/tabs/recipe-detail',
+                params: { recipe: JSON.stringify(recipe) },
+              })
+            }
+          >
+            <Text style={{ color: '#fff', fontWeight: '500' }}>👀 View Full Recipe</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+
+      <TouchableOpacity
+        onPress={() => setMoodRecipes([])}
+        style={{
+          alignSelf: 'center',
+          marginTop: 6,
+          padding: 10,
+          backgroundColor: '#D9534F',
+          borderRadius: 8,
+        }}
+      >
+        <Text style={{ color: '#fff', fontWeight: '500' }}>❌ Clear Mood Results</Text>
+      </TouchableOpacity>
+    </View>
+  )}
+</View>
+
+
+
 
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
         <Text style={styles.logoutText}>Log Out</Text>

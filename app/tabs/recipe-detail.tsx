@@ -28,7 +28,7 @@ export default function RecipeDetail() {
     const fetchDetails = async () => {
       try {
         const res = await fetch(
-          `https://api.spoonacular.com/recipes/${base.id}/information?apiKey=dc49b262797d47e190b6feada3a13494`
+          `https://api.spoonacular.com/recipes/${base.id}/information?includeNutrition=true&apiKey=dc49b262797d47e190b6feada3a13494`
         );
         const data = await res.json();
         setDetails(data);
@@ -48,6 +48,9 @@ export default function RecipeDetail() {
     );
   }
 
+  const getNutrient = (name: string) =>
+    details?.nutrition?.nutrients?.find((n: any) => n.name === name)?.amount;
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 10 }}>
@@ -56,7 +59,15 @@ export default function RecipeDetail() {
       
       <Image source={{ uri: details.image }} style={styles.image} />
       <Text style={styles.title}>{details.title}</Text>
-      <Text style={styles.meta}>⏱ {details.readyInMinutes} min • 🍽 {details.servings} servings</Text>
+      <Text style={styles.meta}>
+        ⏱ {details.readyInMinutes} min • 🍽 {details.servings} servings • 🔥 {getNutrient('Calories')} kcal
+      </Text>
+
+      <View style={styles.badgeRow}>
+        <Text style={styles.nutrientBadge}>🍗 Protein: {getNutrient('Protein')}g</Text>
+        <Text style={styles.nutrientBadge}>🍞 Carbs: {getNutrient('Carbohydrates')}g</Text>
+        <Text style={styles.nutrientBadge}>🥑 Fat: {getNutrient('Fat')}g</Text>
+      </View>
 
       <Text style={styles.section}>Ingredients</Text>
       {details.extendedIngredients?.map((ing: any, index: number) => (
@@ -127,6 +138,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#777',
     marginBottom: 20,
+  },
+  badgeRow: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    marginBottom: 10,
+    paddingLeft: 4,
+  },
+  nutrientBadge: {
+    fontSize: 14,
+    backgroundColor: '#FFF3EC',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+    marginBottom: 6,
+    color: '#4E342E',
+    fontWeight: '500',
   },
   section: {
     fontSize: 18,

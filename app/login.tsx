@@ -16,7 +16,7 @@ export default function LoginScreen() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.replace('/tabs/profile');
+      router.replace('/main/choice');
     } catch (error: any) {
       Alert.alert('Login failed', error.message);
     }

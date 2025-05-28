@@ -36,7 +36,6 @@ export default function ResultScreen() {
       let diet = goal;
     let allergies = '';
 
-    // fallback to Firestore if no goal from params
     if (!goal) {
       const user = auth.currentUser;
       if (user) {

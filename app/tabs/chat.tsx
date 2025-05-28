@@ -2,14 +2,14 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Activi
 import { useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import { KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 export default function ChatScreen() {
   const { goal, allergies } = useLocalSearchParams();
   const [input, setInput] = useState('');
   
   const [messages, setMessages] = useState([
-    { role: 'assistant', text: 'Hi! Enter some ingredients and I’ll give you 5 recipe ideas 🍳. After you decide on which recipe, please pick a number between 1 and 5 for recipe instruction! 📜' }
+    { role: 'assistant', text: 'Hi! Enter some ingredients and I’ll give you 5 recipe ideas 🍳. Please place a comma between each ingredient. After you decide on which recipe, please pick a number between 1 and 5 for recipe instruction! 📜' }
   ]);
   const [loading, setLoading] = useState(false);
   const [awaitingChoice, setAwaitingChoice] = useState(false);
@@ -118,45 +118,63 @@ export default function ChatScreen() {
 
   return (
     <KeyboardAvoidingView
-    style= {{ flex:1 }}
-    behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
-      <Text style={styles.newChatText}>Start New Chat 🍳</Text>
-    </TouchableOpacity>
-
-
-      <ScrollView style={styles.chat} contentContainerStyle={{ padding: 16 }}>
-        {messages.map((msg, index) => (
-          <View key={index}
-            style={[styles.bubble, msg.role === 'user' ? styles.userBubble : styles.aiBubble]}
-          >
-            <Text style={styles.bubbleText}>{msg.text}</Text>
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 80}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={{ flex: 1 }}>
+          <View style={styles.container}>
+            <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
+              <Text style={styles.newChatText}>Start New Chat 🍳</Text>
+            </TouchableOpacity>
+  
+            <ScrollView
+              style={styles.chat}
+              contentContainerStyle={{ padding: 16 }}
+              keyboardShouldPersistTaps="handled"
+            >
+              {messages.map((msg, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.bubble,
+                    msg.role === 'user' ? styles.userBubble : styles.aiBubble,
+                  ]}
+                >
+                  <Text style={styles.bubbleText}>{msg.text}</Text>
+                </View>
+              ))}
+  
+              {isTyping && (
+                <View style={[styles.bubble, styles.aiBubble]}>
+                  <Text style={styles.bubbleText}>{typingText}</Text>
+                </View>
+              )}
+  
+              {loading && !isTyping && (
+                <ActivityIndicator style={{ marginTop: 10 }} color="#F1C27B" />
+              )}
+            </ScrollView>
+  
+            <View style={styles.inputBar}>
+              <TextInput
+                value={input}
+                onChangeText={setInput}
+                placeholder={
+                  awaitingChoice ? 'Enter 1–5 to pick a meal...' : 'Enter ingredients...'
+                }
+                style={styles.input}
+                onSubmitEditing={handleSend}
+                returnKeyType="send"
+              />
+              <TouchableOpacity onPress={handleSend} style={styles.sendBtn}>
+                <Ionicons name="send" size={20} color="#fff" />
+              </TouchableOpacity>
+            </View>
           </View>
-        ))}
-
-        {isTyping && (
-          <View style={[styles.bubble, styles.aiBubble]}>
-            <Text style={styles.bubbleText}>{typingText}</Text>
-          </View>
-        )}
-
-        {loading && !isTyping && <ActivityIndicator style={{ marginTop: 10 }} color="#F1C27B" />}
-      </ScrollView>
-
-      <View style={styles.inputBar}>
-        <TextInput
-          value={input}
-          onChangeText={setInput}
-          placeholder={awaitingChoice ? "Enter 1–5 to pick a meal..." : "Enter ingredients..."}
-          style={styles.input}
-          onSubmitEditing={handleSend}
-        />
-        <TouchableOpacity onPress={handleSend} style={styles.sendBtn}>
-          <Ionicons name="send" size={20} color="#fff" />
-        </TouchableOpacity>
-      </View>
-    </View>
+        </View>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 }
