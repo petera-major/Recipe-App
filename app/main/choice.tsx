@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Text, View, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import React, { useState } from 'react';
 import {auth, db} from '@/firebase';
 import {doc, setDoc} from 'firebase/firestore';
@@ -55,39 +55,48 @@ export default function ChoiceScreen() {
     ];
   
     return (
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Pick Your Dietary Goal</Text>
-  
-        {goals.map((goal) => (
-          <TouchableOpacity
-            key={goal.label}
-            style={[
-              styles.button,
-              selectedGoal?.label === goal.label && styles.selectedButton,
-            ]}
-            onPress={() => setSelectedGoal(goal)}
-          >
-            <Text style={styles.buttonText}>{goal.label}</Text>
-          </TouchableOpacity>
-        ))}
-  
-        <Text style={styles.label}>Any allergies?</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g., peanuts, gluten"
-          value={allergies}
-          onChangeText={setAllergies}
-        />
-  
-        <TouchableOpacity
-          style={styles.continueButton}
-          onPress={handleContinue}
-          disabled={!selectedGoal}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={60}
         >
-          <Text style={styles.continueText}>Continue</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    );
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <ScrollView contentContainerStyle={styles.container}>
+              <Text style={styles.title}>Pick Your Dietary Goal</Text>
+      
+              {goals.map((goal) => (
+                <TouchableOpacity
+                  key={goal.label}
+                  style={[
+                    styles.button,
+                    selectedGoal?.label === goal.label && styles.selectedButton,
+                  ]}
+                  onPress={() => setSelectedGoal(goal)}
+                >
+                  <Text style={styles.buttonText}>{goal.label}</Text>
+                </TouchableOpacity>
+              ))}
+      
+              <Text style={styles.label}>Any allergies?</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g., peanuts, gluten"
+                value={allergies}
+                onChangeText={setAllergies}
+              />
+      
+              <TouchableOpacity
+                style={styles.continueButton}
+                onPress={handleContinue}
+                disabled={!selectedGoal}
+              >
+                <Text style={styles.continueText}>Continue</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
+      );
+      
   }
   
   const styles = StyleSheet.create({

@@ -1,5 +1,5 @@
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
-import { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator, _ScrollView } from 'react-native';
+import { useState, useRef, useEffect } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
@@ -7,6 +7,7 @@ import { KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } fr
 export default function ChatScreen() {
   const { goal, allergies } = useLocalSearchParams();
   const [input, setInput] = useState('');
+  const scrollViewRef = useRef<ScrollView>(null);
   
   const [messages, setMessages] = useState([
     { role: 'assistant', text: 'Hi! Enter some ingredients and I’ll give you 5 recipe ideas 🍳. Please place a comma between each ingredient. After you decide on which recipe, please pick a number between 1 and 5 for recipe instruction! 📜' }
@@ -98,6 +99,11 @@ export default function ChatScreen() {
     setAwaitingChoice(false); 
   };
 
+  useEffect(() => {
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  }, [messages, isTyping]);
+  
+
   const typeOutText = async (text: string) => {
     setIsTyping(true);
     setTypingText('');
@@ -130,8 +136,9 @@ export default function ChatScreen() {
             </TouchableOpacity>
   
             <ScrollView
+              ref={scrollViewRef}
               style={styles.chat}
-              contentContainerStyle={{ padding: 16 }}
+              contentContainerStyle={{ padding: 16, flexGrow: 1, paddingBottom: 80 }}
               keyboardShouldPersistTaps="handled"
             >
               {messages.map((msg, index) => (

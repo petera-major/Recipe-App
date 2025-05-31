@@ -3,7 +3,7 @@ import { auth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, deleteDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { db } from '@/firebase';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -131,6 +131,47 @@ export default function ProfileScreen() {
       </View>
     );
   }
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete your account? This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const user = auth.currentUser;
+              if (!user) {
+                Alert.alert("Error", "No user logged in.");
+                return;
+              }
+  
+              await deleteDoc(doc(db, "users", user.uid));
+  
+              await user.delete();
+  
+              Alert.alert("Account Deleted", "Your account has been successfully deleted.");
+              router.replace('/');
+            } catch (error: any) {
+              console.error("Error deleting account:", error);
+              if (error.code === 'auth/requires-recent-login') {
+                Alert.alert(
+                  "Re-authentication Required",
+                  "For security, please log out and log back in to delete your account."
+                );
+              } else {
+                Alert.alert("Error", "There was a problem deleting your account.");
+              }
+            }
+          },
+        },
+      ]
+    );
+  };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -289,12 +330,23 @@ export default function ProfileScreen() {
   )}
 </View>
 
-
-
-
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
         <Text style={styles.logoutText}>Log Out</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={handleDeleteAccount}
+        style={{
+          backgroundColor: '#FFCDD2',
+          padding: 14,
+          borderRadius: 10,
+          marginTop: 12,
+          width: '100%',
+          alignItems: 'center',
+        }}>
+        <Text style={{ color: '#B71C1C', fontWeight: 'bold' }}>Delete My Account</Text>
+      </TouchableOpacity>
+
 
       <View style={styles.rouletteCard}>
         <Text style={styles.rouletteTitle}>🎲 Recipe Roulette</Text>
