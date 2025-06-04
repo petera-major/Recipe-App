@@ -23,7 +23,10 @@ export default function RecipeDetail() {
 
 
   useEffect(() => {
-    if (!base.id) return;
+    if (base.instructions) {
+      setDetails(base); 
+      
+    } else if (!base.id) return;
 
     const fetchDetails = async () => {
       try {

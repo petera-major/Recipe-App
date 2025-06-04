@@ -1,8 +1,13 @@
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator, _ScrollView } from 'react-native';
-import { useState, useRef, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator, _ScrollView, Image } from 'react-native';
+import { useState, useRef, useEffect} from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import {auth, db} from '@/firebase';
+import {doc, updateDoc, arrayUnion} from 'firebase/firestore';
+import { Share } from 'react-native';
+
+import placeholderImage from '@/assets/images/placeholder.jpg';
 
 export default function ChatScreen() {
   const { goal, allergies } = useLocalSearchParams();
@@ -17,6 +22,7 @@ export default function ChatScreen() {
   const [suggestedMeals, setSuggestedMeals] = useState<string[]>([]);
   const [typingText, setTypingText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [latestRecipe, setLatestRecipe] = useState<any>(null);
 
 
   const handleSend = async () => {
@@ -118,6 +124,14 @@ export default function ChatScreen() {
         setMessages((prev) => [...prev, { role: 'assistant', text }]);
         setTypingText('');
         setIsTyping(false);
+
+        const title = text.split('\n')[0]?.trim();
+        setLatestRecipe({
+        id: Date.now(), 
+        title,
+        image: Image.resolveAssetSource(placeholderImage).uri, 
+        instructions: text,
+      });
       }
     }, 20);
   };
@@ -162,6 +176,66 @@ export default function ChatScreen() {
               {loading && !isTyping && (
                 <ActivityIndicator style={{ marginTop: 10 }} color="#F1C27B" />
               )}
+
+            {latestRecipe && (
+              <View style={{ alignItems: 'center' }}>
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: '#F1C27B',
+                    padding: 10,
+                    borderRadius: 10,
+                    marginTop: 10,
+                  }}
+                  onPress={async () => {
+                    const user = auth.currentUser;
+                    if (!user) {
+                      alert('Please log in to save recipes.');
+                      return;
+                    }
+
+                    try {
+                      const userRef = doc(db, 'users', user.uid);
+                      await updateDoc(userRef, {
+                        bookmarks: arrayUnion(latestRecipe),
+                      });
+                      alert('Recipe saved to bookmarks!');
+                      setLatestRecipe(null); 
+                    } catch (error) {
+                      console.error('Error saving recipe:', error);
+                      alert('Failed to save recipe.');
+                    }
+                  }}
+                >
+                  <Text style={{ color: '#fff', fontWeight: 'bold' }}>❤️ Save This Recipe</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: '#6CB4EE',
+                    padding: 10,
+                    borderRadius: 10,
+                    marginTop: 10,
+                  }}
+                  onPress={async () => {
+                    if (!latestRecipe) return;
+
+                    try {
+                      await Share.share({
+                        title: latestRecipe.title,
+                        message: `🍽️ ${latestRecipe.title}\n\n${latestRecipe.instructions}`,
+                      });
+                    } catch (error) {
+                      console.error('Error sharing text:', error);
+                      alert('Failed to share recipe.');
+                    }
+                  }}
+                >
+                  <Text style={{ color: '#fff', fontWeight: 'bold' }}>📤 Share as Text</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+
             </ScrollView>
   
             <View style={styles.inputBar}>
