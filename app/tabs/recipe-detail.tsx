@@ -25,8 +25,11 @@ export default function RecipeDetail() {
   useEffect(() => {
     if (base.instructions) {
       setDetails(base); 
+      return;
 
-    } else if (!base.id) return;
+    }
+    
+    if (!base.id) return;
 
     const fetchDetails = async () => {
       try {
@@ -65,12 +68,23 @@ export default function RecipeDetail() {
       )}
       <Text style={styles.title}>{details.title}</Text>
   
-      {!base.id ? (
+      {typeof base.id === 'string' && base.id.startsWith('ai-') ? (
         <View>
+          <Text style={styles.meta}>
+            🍽 {details.servings || 'N/A'} servings • 🔥 {details.calories || 'N/A'} kcal
+          </Text>
+
+          <Text style={styles.section}>Ingredients</Text>
+          {Array.isArray(details.ingredients)
+          ? details.ingredients.map((ing: string, index: number) => (
+              <Text key={index} style={styles.text}>• {ing}</Text>
+            ))
+          : <Text style={styles.text}>No ingredients found.</Text>}
+
           <Text style={styles.section}>Instructions</Text>
           <Text style={styles.text}>{details.instructions}</Text>
         </View>
-      ) : (
+        ) : (
         <View>
           <Text style={styles.meta}>
             ⏱ {details.readyInMinutes} min • 🍽 {details.servings} servings • 🔥 {getNutrient('Calories')} kcal

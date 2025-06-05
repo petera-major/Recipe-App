@@ -126,15 +126,26 @@ export default function ChatScreen() {
         setIsTyping(false);
 
         const title = text.split('\n')[0]?.trim();
+
+      const ingredientsMatch = text.match(/ingredients\s*[:\n-]+\s*((?:- .*?\n?)+)/i);
+      const rawIngredients = ingredientsMatch?.[1]?.trim() || '';
+      const ingredientList = rawIngredients
+        .split('\n')
+        .map((line) => line.replace(/^- /, '').trim())
+        .filter((line) => line.length > 0);
+
+      if (ingredientList.length > 0) {
         setLatestRecipe({
-        id: Date.now(), 
-        title,
-        image: Image.resolveAssetSource(placeholderImage).uri, 
-        instructions: text,
-      });
+          id: `ai-${Date.now()}`,
+          title: title || "AI-Generated Recipe",
+          image: Image.resolveAssetSource(placeholderImage).uri,
+          ingredients: ingredientList,
+          instructions: text,
+        });
       }
-    }, 20);
-  };
+    }
+  }, 20); 
+};          
 
   return (
     <KeyboardAvoidingView
@@ -198,9 +209,9 @@ export default function ChatScreen() {
                         id: `ai-${Date.now()}`, 
                         title: latestRecipe.title || "AI-Generated Recipe",
                         image: latestRecipe.image || Image.resolveAssetSource(placeholderImage).uri,
-                        ingredients: latestRecipe.ingredients
-                          ? latestRecipe.ingredients.split(',').map((i: string) => i.trim())
-                          : [],
+                        ingredients: Array.isArray(latestRecipe.ingredients)
+                        ? latestRecipe.ingredients
+                        : (latestRecipe.ingredients || '').split(',').map((i: string) => i.trim()),
                         instructions: latestRecipe.instructions || "No instructions provided.",
                       };
             
@@ -210,7 +221,7 @@ export default function ChatScreen() {
                       });
             
                       alert('Recipe saved to bookmarks!');
-                      setLatestRecipe(null);
+                      setTimeout(() => setLatestRecipe(null), 2000);
                     } catch (error) {
                       console.error('Error saving recipe:', error);
                       alert('Failed to save recipe.');
