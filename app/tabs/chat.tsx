@@ -194,12 +194,23 @@ export default function ChatScreen() {
                     }
 
                     try {
+                      const cleanedRecipe = {
+                        id: `ai-${Date.now()}`, 
+                        title: latestRecipe.title || "AI-Generated Recipe",
+                        image: latestRecipe.image || Image.resolveAssetSource(placeholderImage).uri,
+                        ingredients: latestRecipe.ingredients
+                          ? latestRecipe.ingredients.split(',').map((i: string) => i.trim())
+                          : [],
+                        instructions: latestRecipe.instructions || "No instructions provided.",
+                      };
+            
                       const userRef = doc(db, 'users', user.uid);
                       await updateDoc(userRef, {
-                        bookmarks: arrayUnion(latestRecipe),
+                        bookmarks: arrayUnion(cleanedRecipe),
                       });
+            
                       alert('Recipe saved to bookmarks!');
-                      setLatestRecipe(null); 
+                      setLatestRecipe(null);
                     } catch (error) {
                       console.error('Error saving recipe:', error);
                       alert('Failed to save recipe.');
