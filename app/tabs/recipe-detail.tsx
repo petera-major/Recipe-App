@@ -25,7 +25,7 @@ export default function RecipeDetail() {
   useEffect(() => {
     if (base.instructions) {
       setDetails(base); 
-      
+
     } else if (!base.id) return;
 
     const fetchDetails = async () => {
@@ -59,68 +59,81 @@ export default function RecipeDetail() {
       <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 10 }}>
         <Text style={{ color: '#F1C27B', fontSize: 16 }}>← Back</Text>
       </TouchableOpacity>
-      
-      <Image source={{ uri: details.image }} style={styles.image} />
-      <Text style={styles.title}>{details.title}</Text>
-      <Text style={styles.meta}>
-        ⏱ {details.readyInMinutes} min • 🍽 {details.servings} servings • 🔥 {getNutrient('Calories')} kcal
-      </Text>
-
-      <View style={styles.badgeRow}>
-        <Text style={styles.nutrientBadge}>🍗 Protein: {getNutrient('Protein')}g</Text>
-        <Text style={styles.nutrientBadge}>🍞 Carbs: {getNutrient('Carbohydrates')}g</Text>
-        <Text style={styles.nutrientBadge}>🥑 Fat: {getNutrient('Fat')}g</Text>
-      </View>
-
-      <Text style={styles.section}>Ingredients</Text>
-      {details.extendedIngredients?.map((ing: any, index: number) => (
-        <Text key={index} style={styles.text}>• {ing.original}</Text>
-      ))}
-
-      <Text style={styles.section}>Instructions</Text>
-      {details.analyzedInstructions?.[0]?.steps?.length > 0 ? (
-        details.analyzedInstructions[0].steps.map((step: any, index: number) => (
-          <CheckBox
-            key={index}
-            title={`${index + 1}. ${step.step}`}
-            checked={checkedSteps.includes(index)}
-            onPress={() => {
-              setCheckedSteps(prev => {
-                const updated = prev.includes(index)
-                  ? prev.filter(i => i !== index)
-                  : [...prev, index];
-
-                if (updated.length === details.analyzedInstructions[0].steps.length) {
-                  setShowBadge(true);
-                  Animated.timing(badgeOpacity, {
-                    toValue: 1,
-                    duration: 500,
-                    useNativeDriver: true,
-                  }).start();
-                } else {
-                  setShowBadge(false);
-                  badgeOpacity.setValue(0);
-                }
-
-                return updated;
-              });
-            }}
-            containerStyle={{ backgroundColor: 'transparent', borderWidth: 0 }}
-            textStyle={{ fontSize: 14, color: '#444', lineHeight: 20 }}
-            checkedColor="#F1C27B"
-          />
-        ))
-      ) : (
-        <Text style={styles.text}>No instructions provided.</Text>
+  
+      {details.image && (
+        <Image source={{ uri: details.image }} style={styles.image} />
       )}
-      {showBadge && (
-        <Animated.View style={[styles.badge, { opacity: badgeOpacity }]}>
-          <Text style={styles.badgeText}>🎉 Finished Cooking!</Text>
-        </Animated.View>
+      <Text style={styles.title}>{details.title}</Text>
+  
+      {!base.id ? (
+        <View>
+          <Text style={styles.section}>Instructions</Text>
+          <Text style={styles.text}>{details.instructions}</Text>
+        </View>
+      ) : (
+        <View>
+          <Text style={styles.meta}>
+            ⏱ {details.readyInMinutes} min • 🍽 {details.servings} servings • 🔥 {getNutrient('Calories')} kcal
+          </Text>
+  
+          <View style={styles.badgeRow}>
+            <Text style={styles.nutrientBadge}>🍗 Protein: {getNutrient('Protein')}g</Text>
+            <Text style={styles.nutrientBadge}>🍞 Carbs: {getNutrient('Carbohydrates')}g</Text>
+            <Text style={styles.nutrientBadge}>🥑 Fat: {getNutrient('Fat')}g</Text>
+          </View>
+  
+          <Text style={styles.section}>Ingredients</Text>
+          {details.extendedIngredients?.map((ing: any, index: number) => (
+            <Text key={index} style={styles.text}>• {ing.original}</Text>
+          ))}
+  
+          <Text style={styles.section}>Instructions</Text>
+          {details.analyzedInstructions?.[0]?.steps?.length > 0 ? (
+            details.analyzedInstructions[0].steps.map((step: any, index: number) => (
+              <CheckBox
+                key={index}
+                title={`${index + 1}. ${step.step}`}
+                checked={checkedSteps.includes(index)}
+                onPress={() => {
+                  setCheckedSteps(prev => {
+                    const updated = prev.includes(index)
+                      ? prev.filter(i => i !== index)
+                      : [...prev, index];
+  
+                    if (updated.length === details.analyzedInstructions[0].steps.length) {
+                      setShowBadge(true);
+                      Animated.timing(badgeOpacity, {
+                        toValue: 1,
+                        duration: 500,
+                        useNativeDriver: true,
+                      }).start();
+                    } else {
+                      setShowBadge(false);
+                      badgeOpacity.setValue(0);
+                    }
+  
+                    return updated;
+                  });
+                }}
+                containerStyle={{ backgroundColor: 'transparent', borderWidth: 0 }}
+                textStyle={{ fontSize: 14, color: '#444', lineHeight: 20 }}
+                checkedColor="#F1C27B"
+              />
+            ))
+          ) : (
+            <Text style={styles.text}>No instructions provided.</Text>
+          )}
+  
+          {showBadge && (
+            <Animated.View style={[styles.badge, { opacity: badgeOpacity }]}>
+              <Text style={styles.badgeText}>🎉 Finished Cooking!</Text>
+            </Animated.View>
+          )}
+        </View>
       )}
     </ScrollView>
   );
-}  
+  }  
 
 const styles = StyleSheet.create({
   loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
