@@ -13,7 +13,7 @@ Frontend & Backend Support:
 
 Frontend- * React Native framework for UI and interactivity
           * React Navigation
-          * Tailwing CSS
+          * Tailwind CSS
           
 Backend-  * Spoonacular API for recipes
           * OPENAI API for generation personalized recipes
@@ -54,7 +54,7 @@ Detailed Recipe- Users view the full recipe which includes calories, ingredients
 
 ### Version Changelog
 
-Version - Summary of Changes 📋
+Version - Summary of Changes 
 
 **Week 3** - Basic screens in place: Goal Selection, Home, AI Chat on Home screen, no navigation tabs. No APIs or Firebase connected. 
 
